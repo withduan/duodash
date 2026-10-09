@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from 'astro';
 import { gzip } from 'node:zlib';
 import { promisify } from 'node:util';
+import { checkAccess } from './utils/access';
 
 const gzipAsync = promisify(gzip);
 
@@ -63,7 +64,11 @@ function isInCompressRange(size: number): boolean {
 
 export const onRequest: MiddlewareHandler = async function (context, next) {
   const { request } = context;
+  const denied = await checkAccess(request);
+  if (denied) return withSecurityHeaders(denied);
   const response = withSecurityHeaders(await next());
+  // Authenticated HTML and API data must never be cached by a shared CDN.
+  response.headers.set('Cache-Control', 'private, no-store');
   const method = request.method;
 
   if (method !== 'GET' && method !== 'HEAD') return response;

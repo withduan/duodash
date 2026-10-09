@@ -16,6 +16,7 @@
     "@types/react-dom": "^19.2.3",
     "@zumer/snapdom": "^2.0.1",
     "astro": "^6.1.1",
+    "jose": "^6.2.12",
     "lucide-react": "^1.16.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

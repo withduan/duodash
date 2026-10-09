@@ -11,3 +11,11 @@ Cloudflare 中保持 `duo.iduan.me` 为代理 DNS 记录，Access 应用路径�
 检查：`node --test tests/access.test.ts`，随后 `npm run build`。上线后确认未登录的自定义域名跳转 Access、Vercel 默认域名及其 `/api/data`、`/api/ai`、`/api/config` 拒绝访问，伪造 JWT 和旧 API Token 不能绕过；再从真实 Access 登录会话验证页面及 API。
 
 本地开发不配置这两项时允许访问；若 `.env.local` 配置了两项，本地同样要求 Access JWT。
+
+## GitHub 自动部署
+
+生产项目 `withduans-projects/duodash` 已连接 `withduan/duodash`，推送 `main` 触发 Vercel 生产部署。个人凭据仅保存在本地 `.env.local` 和 Vercel 环境变量中，不提交到 Git。Cloudflare SSL/TLS 使用 Full (strict)，避免 Vercel 强制 HTTPS 与 Flexible 模式形成重定向循环。
+
+本地 `origin` 指向个人 Fork，`upstream` 指向 `Eyozy/duodash`。同步上游时先检查并合并改动，保留 `src/utils/access.ts` 和中间件鉴权；测试及构建通过后再推送。不要直接用上游版本覆盖生产代码。
+
+Vercel 报仓库不存在时，检查 GitHub Vercel App 是否允许访问本仓库；若 GitHub 集成返回 `401 Bad credentials`，在 Vercel 账号认证设置中重新连接 GitHub。提交应使用个人 GitHub 已关联的作者身份，避免沿用上游作者导致部署权限检查失败。
